@@ -80,18 +80,15 @@ let args = [];
 if (typeof process !== "undefined") {
   if (process.isBun) {
     // Bun specific code - has process
-    // console.log(Bun);
     args = Bun.argv.slice(2) || [];
   } else if (process.title === "node") {
     // Node.js specific code
-    // console.log(process);
     args = process.argv.slice(2) || [];
   } else {
     throw "Unsupported Runtime: Must be either Node, Deno, or Bun";
   }
 } else if (typeof Deno !== "undefined") {
   // Deno specific code
-  // console.log(Deno);
   args = Deno.args || [];
 } else if (typeof Bun !== "undefined") {
   // Bun specific code - no process
@@ -216,12 +213,11 @@ function readFlags(args) {
   const possibleFlags = {
     remaining: args,
   };
-  //   console.log(possibleFlags);
   if (args) {
+    // TODO: Should order actual matter
     let i = 0;
     while (i < args.length) {
       let item = args[i];
-      //   console.log(i, item);
       if (item.startsWith("-")) {
         const found_flag = FLAG_LIST.find(({ long, short }) =>
           short === item.slice(1) || long === item.slice(2)
@@ -233,7 +229,6 @@ function readFlags(args) {
             const foundIndex = possibleFlags.remaining.findIndex((elem) =>
               elem === item
             );
-            // console.log(foundIndex);
             possibleFlags.remaining.splice(foundIndex, 2);
             continue;
           } else {
@@ -246,10 +241,8 @@ function readFlags(args) {
         }
       }
       i += 1;
-      //   console.log(i, possibleFlags);
     }
   }
-  //   console.log("Possible Flags", possibleFlags);
   return possibleFlags;
 }
 
@@ -260,16 +253,12 @@ function readFlags(args) {
  */
 function getConfig(args) {
   const config = DEFAULT_CONFIG;
-  // TODO: Add -- and - options to make it so order shouldn't matter
   if (args) {
     let flags = readFlags(args);
-    config.data_dir = flags.data_dir || flags.remaining[0] || config.data_dir;
-    config.output_dir = flags.output_dir || flags.remaining[1] ||
-      config.output_dir;
-    config.template_dir = flags.template_dir || flags.remaining[2] ||
-      config.template_dir;
-    config.static_dir = flags.static_dir || flags.remaining[3] ||
-      config.static_dir;
+    config.data_dir = flags.data_dir || config.data_dir;
+    config.output_dir = flags.output_dir || config.output_dir;
+    config.template_dir = flags.template_dir || config.template_dir;
+    config.static_dir = flags.static_dir || config.static_dir;
   }
   return config;
 }
@@ -282,9 +271,7 @@ function getConfig(args) {
  */
 function includesAny(arr, options) {
   for (const item of arr) {
-    if (options.includes(item)) {
-      return true;
-    }
+    if (options.includes(item)) return true;
   }
   return false;
 }
@@ -299,5 +286,5 @@ if (args[0] === "help" || includesAny(args, ["help", "--help", "-h"])) {
 } else {
   const config = getConfig(args);
   console.log(config);
-  //   processConfig(config);
+    processConfig(config);
 }
